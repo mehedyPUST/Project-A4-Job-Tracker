@@ -32,6 +32,7 @@ function showEmptyMessage() {
 /* ================= COUNTER ================= */
 
 function jobsCounter(activeTab = "all") {
+
     const totalJobs = allAvailableJobs.children.length;
     const interviewJobs = interviewList.length;
     const rejectedJobs = rejectedList.length;
@@ -42,9 +43,19 @@ function jobsCounter(activeTab = "all") {
 
     if (!availableJobsWrapper) return;
 
-    if (activeTab === "all") availableJobsWrapper.innerHTML = `<span>${totalJobs}</span> Jobs`;
-    if (activeTab === "interview") availableJobsWrapper.innerHTML = `<span>${interviewJobs}</span> of ${totalJobs} Jobs`;
-    if (activeTab === "rejected") availableJobsWrapper.innerHTML = `<span>${rejectedJobs}</span> of ${totalJobs} Jobs`;
+    if (activeTab === "all") {
+        availableJobsWrapper.innerHTML = `<span>${totalJobs}</span> Jobs`;
+    }
+
+    if (activeTab === "interview") {
+        availableJobsWrapper.innerHTML =
+            `<span>${interviewJobs}</span> of ${totalJobs} Jobs`;
+    }
+
+    if (activeTab === "rejected") {
+        availableJobsWrapper.innerHTML =
+            `<span>${rejectedJobs}</span> of ${totalJobs} Jobs`;
+    }
 }
 
 jobsCounter();
@@ -52,11 +63,14 @@ jobsCounter();
 /* ================= BUTTON STYLE ================= */
 
 function toggleBtnStyle(id) {
+
     const buttons = [btnAllFilter, btnInterviewFilter, btnRejectedFilter];
+
     buttons.forEach(btn => {
         btn.classList.remove('bg-blue-500', 'text-white');
         btn.classList.add('bg-gray-200', 'text-gray-800');
     });
+
     const clicked = document.getElementById(id);
     clicked.classList.remove('bg-gray-200', 'text-gray-800');
     clicked.classList.add('bg-blue-500', 'text-white');
@@ -88,23 +102,44 @@ btnRejectedFilter.addEventListener('click', function () {
 /* ================= RENDER FUNCTIONS ================= */
 
 function renderInterviewList() {
+
     filteredJobList.innerHTML = '';
-    if (interviewList.length === 0) { showEmptyMessage(); return; }
-    interviewList.forEach(item => createFilteredCard(item, 'INTERVIEW'));
+
+    if (interviewList.length === 0) {
+        showEmptyMessage();
+        return;
+    }
+
+    interviewList.forEach(item => {
+        createFilteredCard(item, 'INTERVIEW');
+    });
 }
 
 function renderRejectedList() {
+
     filteredJobList.innerHTML = '';
-    if (rejectedList.length === 0) { showEmptyMessage(); return; }
-    rejectedList.forEach(item => createFilteredCard(item, 'REJECTED'));
+
+    if (rejectedList.length === 0) {
+        showEmptyMessage();
+        return;
+    }
+
+    rejectedList.forEach(item => {
+        createFilteredCard(item, 'REJECTED');
+    });
 }
 
 /* ================= CARD CREATOR ================= */
 
 function createFilteredCard(data, type) {
+
     let div = document.createElement('div');
     div.className = 'flex justify-between p-4 border bg-gray-50 rounded-sm';
-    const statusColor = type === 'INTERVIEW' ? 'text-[#10B981] border-[#10B981]' : 'text-[#EF4444] border-[#EF4444]';
+
+    const statusColor =
+        type === 'INTERVIEW'
+            ? 'text-[#10B981] border-[#10B981]'
+            : 'text-[#EF4444] border-[#EF4444]';
 
     div.innerHTML = `
         <div class="space-y-2">
@@ -113,27 +148,40 @@ function createFilteredCard(data, type) {
             <br>
             <p class="location-type-salary text-[#64748B]">${data.locationTypeSalary}</p>
             <br>
-            <p class="job-status border-2 font-medium py-2 px-4 w-35 rounded-sm ${statusColor}">${type}</p>
+            <p class="job-status border-2 font-medium py-2 px-4 w-35 rounded-sm ${statusColor}">
+                ${type}
+            </p>
             <p class="job-details">${data.jobDetails}</p>
             <div class="flex gap-4">
-                <button class="btn-interview py-2 px-4 w-30 rounded-sm font-bold text-[#10B981] border-2 border-[#10B981]">INTERVIEW</button>
-                <button class="btn-rejected py-2 px-4 w-30 rounded-sm font-bold text-[#EF4444] border-2 border-[#EF4444]">REJECTED</button>
+                <button class="btn-interview py-2 px-4 w-30 rounded-sm font-bold text-[#10B981] border-2 border-[#10B981]">
+                    INTERVIEW
+                </button>
+                <button class="btn-rejected py-2 px-4 w-30 rounded-sm font-bold text-[#EF4444] border-2 border-[#EF4444]">
+                    REJECTED
+                </button>
             </div>
         </div>
         <div>
-            <button class="bg-white p-1 rounded-sm text-red-500 border border-[#EF4444]"><i class="fa-regular fa-trash-can"></i></button>
+            <button class="bg-white p-1 rounded-sm text-red-500 border border-[#EF4444]">
+                <i class="fa-regular fa-trash-can"></i>
+            </button>
         </div>
     `;
+
     filteredJobList.appendChild(div);
 }
 
 /* ================= MAIN EVENT HANDLER ================= */
 
 function handleJobAction(event) {
+
     const target = event.target;
 
     /* ===== STATUS CHANGE ===== */
-    if (target.classList.contains('btn-interview') || target.classList.contains('btn-rejected')) {
+
+    if (target.classList.contains('btn-interview') ||
+        target.classList.contains('btn-rejected')) {
+
         const card = target.closest('.flex.justify-between');
 
         const jobProvider = card.querySelector('.job-provider').innerText;
@@ -141,8 +189,16 @@ function handleJobAction(event) {
         const locationTypeSalary = card.querySelector('.location-type-salary').innerText;
         const jobDetails = card.querySelector('.job-details').innerText;
 
-        const type = target.classList.contains('btn-interview') ? 'INTERVIEW' : 'REJECTED';
-        const cardInfo = { jobProvider, jobTitle, locationTypeSalary, jobDetails };
+        const type = target.classList.contains('btn-interview')
+            ? 'INTERVIEW'
+            : 'REJECTED';
+
+        const cardInfo = {
+            jobProvider,
+            jobTitle,
+            locationTypeSalary,
+            jobDetails
+        };
 
         interviewList = interviewList.filter(i => i.jobProvider !== jobProvider);
         rejectedList = rejectedList.filter(i => i.jobProvider !== jobProvider);
@@ -150,19 +206,14 @@ function handleJobAction(event) {
         if (type === 'INTERVIEW') interviewList.push(cardInfo);
         else rejectedList.push(cardInfo);
 
-        // Update badge in All tab
-        if (allAvailableJobs.contains(card)) {
-            const jobStatusElement = card.querySelector('.job-status');
-            jobStatusElement.innerText = type;
-            jobStatusElement.className = `job-status border-2 font-medium py-2 px-4 w-35 rounded-sm ${type === 'INTERVIEW' ? 'text-[#10B981] border-[#10B981]' : 'text-[#EF4444] border-[#EF4444]'
-                }`;
-        }
-
         updateCounterByActiveTab();
     }
 
     /* ===== DELETE ===== */
-    if (target.classList.contains('fa-trash-can') || target.closest('.bg-white.p-1')) {
+
+    if (target.classList.contains('fa-trash-can') ||
+        target.closest('.bg-white.p-1')) {
+
         const card = target.closest('.flex.justify-between');
         const jobProvider = card.querySelector('.job-provider').innerText;
 
@@ -170,6 +221,7 @@ function handleJobAction(event) {
         rejectedList = rejectedList.filter(i => i.jobProvider !== jobProvider);
 
         card.remove();
+
         updateCounterByActiveTab();
     }
 }
@@ -180,7 +232,16 @@ filteredJobList.addEventListener('click', handleJobAction);
 /* ================= ACTIVE TAB UPDATE ================= */
 
 function updateCounterByActiveTab() {
-    if (btnInterviewFilter.classList.contains('bg-blue-500')) { renderInterviewList(); jobsCounter("interview"); }
-    else if (btnRejectedFilter.classList.contains('bg-blue-500')) { renderRejectedList(); jobsCounter("rejected"); }
-    else { jobsCounter("all"); }
+
+    if (btnInterviewFilter.classList.contains('bg-blue-500')) {
+        renderInterviewList();
+        jobsCounter("interview");
+    }
+    else if (btnRejectedFilter.classList.contains('bg-blue-500')) {
+        renderRejectedList();
+        jobsCounter("rejected");
+    }
+    else {
+        jobsCounter("all");
+    }
 }

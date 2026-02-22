@@ -6,19 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Application Tracker</title>
 
-    <!-- Tailwind -->
+    <!-- tailwind -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-    <!-- Font -->
+    <!-- font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet">
 
-    <!-- Icons -->
+
+
+    <!-- icons -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-
     <style>
         * {
             font-family: "Geist", sans-serif;
@@ -26,46 +28,58 @@
     </style>
 </head>
 
+
+
 <body class="bg-[#ffd7b5]/10 w-[80vw] mx-auto pt-5 pb-10">
 
+
     <header>
-        <h1 class="font-extrabold text-[#000035] text-[32px] mb-2.5">Job Application Tracker</h1>
-        <div class="grid grid-cols-3 gap-4">
+        <h1 class="font-extrabold text-[#000035] text-[32px] mb-2.5 ">Job Application Tracker</h1>
+        <div class=" grid grid-cols-3 gap-4">
+
             <div class="p-5 bg-amber-100 rounded-xl ">
                 <p>Total</p>
                 <h2 id="total-count" class="text-[#000035] text-[24px] font-bold">0</h2>
             </div>
+
             <div class="p-5 bg-green-100 rounded-xl ">
                 <p>Interview</p>
                 <h2 id="interview-count" class="text-[#10B981] text-[24px] font-bold">0</h2>
             </div>
+
             <div class="p-5 bg-red-100 rounded-xl ">
                 <p>Rejected</p>
                 <h2 id="rejected-count" class="text-[#EF4444] text-[24px] font-bold">0</h2>
             </div>
         </div>
+
     </header>
 
-    <!-- Available jobs count -->
+    <!-- avaiable jobs -->
     <section class="flex justify-between mt-15 mb-6">
         <h2>Available Jobs</h2>
         <p><span>0</span> Jobs</p>
     </section>
 
-    <!-- Filter buttons -->
+    <!-- buttons -->
     <section class="flex gap-5 mb-4">
         <button onclick="toggleBtnStyle('btn-all-filter')" id="btn-all-filter"
-            class="cursor-pointer bg-blue-500 text-white py-2 px-4 w-30 rounded-sm">All</button>
+            class=" cursor-pointer bg-blue-500 text-white py-2 px-4 w-30 rounded-sm">All</button>
+
         <button onclick="toggleBtnStyle('btn-interview-filter')" id="btn-interview-filter"
-            class="cursor-pointer bg-gray-200 text-gray-800 py-2 px-4 w-30 rounded-sm">Interview</button>
+            class=" cursor-pointer bg-gray-200  text-gray-800 py-2 px-4 w-30 rounded-sm">Interview</button>
+
         <button onclick="toggleBtnStyle('btn-rejected-filter')" id="btn-rejected-filter"
-            class="cursor-pointer bg-gray-200 text-gray-800 py-2 px-4 w-30 rounded-sm">Rejected</button>
+            class=" cursor-pointer bg-gray-200  text-gray-800  py-2 px-4 w-30 rounded-sm">Rejected</button>
     </section>
 
-    <!-- Filtered jobs -->
-    <section id="filtered-job-list" class="space-y-4"></section>
 
-    <!-- All jobs -->
+    <!-- filtered job  -->
+    <section id="filtered-job-list" class="space-y-4">
+
+    </section>
+
+    <!-- jobs card  -->
     <section id="all-available-jobs" class="space-y-4">
 
         <div class="flex justify-between p-4 border border-blue-200 bg-gray-50 rounded-sm">
@@ -75,22 +89,26 @@
                 <br>
                 <p class="location-type-salary text-[#64748B]">Remote • Full-time • $130,000 - $175,000</p>
                 <br>
-                <p class="job-status bg-gray-200 font-medium py-2 px-4 w-35 rounded-sm">NOT APPLIED</p>
+
+                <p class=" job-status bg-gray-200 font-medium py-2 px-4 w-35 rounded-sm ">NOT APPLIED</p>
                 <p class="job-details">Build cross-platform mobile applications using React Native. Work on products
-                    used by millions of users worldwide.</p>
+                    used by millions of
+                    users worldwide.</p>
                 <div class="flex gap-4">
                     <button
-                        class="btn-interview py-2 px-4 w-30 rounded-sm font-bold text-[#10B981] border-2 border-[#10B981]">INTERVIEW</button>
+                        class=" btn-interview  py-2 px-4 w-30 rounded-sm font-bold  text-[#10B981] border-2 border-[#10B981]">INTERVIEW</button>
+
                     <button
-                        class="btn-rejected py-2 px-4 w-30 rounded-sm font-bold text-[#EF4444] border-2 border-[#EF4444]">REJECTED</button>
+                        class=" btn-rejected  py-2 px-4 w-30 rounded-sm  font-bold text-[#EF4444] border-2 border-[#EF4444]">REJECTED</button>
                 </div>
             </div>
+
             <div>
-                <button class="bg-white p-1 rounded-sm text-red-500 border border-[#EF4444]">
-                    <i class="fa-regular fa-trash-can"></i>
-                </button>
+                <button class=" bg-white p-1  rounded-sm text-red-500 border border-[#EF4444]"><i
+                        class="fa-regular fa-trash-can"></i></button>
             </div>
         </div>
+
 
         <div class="flex justify-between p-4 border border-blue-200 bg-gray-50 rounded-sm">
             <div class="space-y-2">
@@ -99,24 +117,38 @@
                 <br>
                 <p class="location-type-salary text-[#64748B]">Remote • Full-time • $130,000 - $175,000</p>
                 <br>
-                <p class="job-status bg-gray-200 font-medium py-2 px-4 w-35 rounded-sm">NOT APPLIED</p>
+
+                <p class=" job-status bg-gray-200 font-medium py-2 px-4 w-35 rounded-sm text-center ">NOT APPLIED</p>
                 <p class="job-details">Build cross-platform mobile applications using React Native. Work on products
-                    used by millions of users worldwide.</p>
+                    used by millions of
+                    users worldwide.</p>
                 <div class="flex gap-4">
                     <button
-                        class="btn-interview py-2 px-4 w-30 rounded-sm font-bold text-[#10B981] border-2 border-[#10B981]">INTERVIEW</button>
+                        class=" btn-interview  py-2 px-4 w-30 rounded-sm font-bold  text-[#10B981] border-2 border-[#10B981]">INTERVIEW</button>
+
                     <button
-                        class="btn-rejected py-2 px-4 w-30 rounded-sm font-bold text-[#EF4444] border-2 border-[#EF4444]">REJECTED</button>
+                        class=" btn-rejected  py-2 px-4 w-30 rounded-sm  font-bold text-[#EF4444] border-2 border-[#EF4444]">REJECTED</button>
                 </div>
             </div>
+
             <div>
-                <button class="bg-white p-1 rounded-sm text-red-500 border border-[#EF4444]">
-                    <i class="fa-regular fa-trash-can"></i>
-                </button>
+                <button class=" bg-white p-1  rounded-sm text-red-500 border border-[#EF4444]"><i
+                        class="fa-regular fa-trash-can"></i></button>
             </div>
         </div>
 
+
+
+
+
     </section>
+
+
+
+
+
+
+
 
     <script src="./script.js"></script>
 </body>
