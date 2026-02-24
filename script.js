@@ -26,3 +26,73 @@ function checkAllJobsEmptyState() {
         allJobsEmptyMessage.classList.add('hidden');
     }
 }
+
+
+// ... previous code ...
+
+const btnAllFilter = document.getElementById('btn-all-filter');
+const btnInterviewFilter = document.getElementById('btn-interview-filter');
+const btnRejectedFilter = document.getElementById('btn-rejected-filter');
+
+function toggleBtnStyle(id) {
+    btnAllFilter.classList.remove('bg-blue-500', 'text-white', 'active-tab');
+    btnInterviewFilter.classList.remove('bg-blue-500', 'text-white', 'active-tab');
+    btnRejectedFilter.classList.remove('bg-blue-500', 'text-white', 'active-tab');
+
+    btnAllFilter.classList.add('bg-gray-200', 'text-gray-800');
+    btnInterviewFilter.classList.add('bg-gray-200', 'text-gray-800');
+    btnRejectedFilter.classList.add('bg-gray-200', 'text-gray-800');
+
+    const clicked = document.getElementById(id);
+    if (clicked) {
+        clicked.classList.remove('bg-gray-200', 'text-gray-800');
+        clicked.classList.add('bg-blue-500', 'text-white', 'active-tab');
+    }
+
+    if (id == 'btn-interview-filter') {
+        allJobsCard.classList.add('hidden');
+        allJobsEmptyMessage.classList.add('hidden');
+        filteredJobList.classList.remove('hidden');
+        renderInterview();
+    } else if (id == 'btn-rejected-filter') {
+        allJobsCard.classList.add('hidden');
+        allJobsEmptyMessage.classList.add('hidden');
+        filteredJobList.classList.remove('hidden');
+        renderRejected();
+    } else if (id == 'btn-all-filter') {
+        allJobsCard.classList.remove('hidden');
+        filteredJobList.classList.add('hidden');
+        checkAllJobsEmptyState();
+    }
+}
+
+// Filter button click handlers
+document.getElementById('btn-all-filter').addEventListener('click', function () {
+    toggleBtnStyle('btn-all-filter');
+    updateAvailableJobsCount();
+});
+
+document.getElementById('btn-interview-filter').addEventListener('click', function () {
+    toggleBtnStyle('btn-interview-filter');
+    updateAvailableJobsCount();
+});
+
+document.getElementById('btn-rejected-filter').addEventListener('click', function () {
+    toggleBtnStyle('btn-rejected-filter');
+    updateAvailableJobsCount();
+});
+
+function updateAvailableJobsCount() {
+    const counterElement = document.getElementById('available-jobs-count');
+    const total = parseInt(totalCount.innerText);
+
+    if (btnAllFilter.classList.contains('active-tab')) {
+        counterElement.innerHTML = `<p><span id="page-land-total">${total}</span> <span>Jobs </span></p>`;
+    } else if (btnInterviewFilter.classList.contains('active-tab')) {
+        counterElement.innerHTML = `<p><span id="page-land-total">${interviewList.length}</span> <span>of ${total} Jobs</span></p>`;
+    } else if (btnRejectedFilter.classList.contains('active-tab')) {
+        counterElement.innerHTML = `<p><span id="page-land-total">${rejectedList.length}</span> <span>of ${total} Jobs</span></p>`;
+    }
+}
+
+updateAvailableJobsCount();
