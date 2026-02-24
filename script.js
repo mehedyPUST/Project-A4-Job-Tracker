@@ -67,7 +67,7 @@ function toggleBtnStyle(id) {
 
 function updateAvailableJobsCount() {
     const counterElement = document.getElementById('available-jobs-count');
-    const total = parseInt(totalCount.innerText);
+    const total = totalCount.innerText;
 
     if (btnAllFilter.classList.contains('active-tab')) {
         counterElement.innerHTML = `<p><span id="page-land-total">${total}</span> <span>Jobs </span></p>`;
