@@ -8,6 +8,7 @@ let rejectedCount = document.getElementById('rejected-count');
 
 const allJobsCard = document.getElementById('all-available-jobs');
 const allJobsEmptyMessage = document.getElementById('all-jobs-empty-message');
+const mainContainer = document.querySelector('main');
 const filteredJobList = document.getElementById('filtered-job-list');
 
 function calculateCount() {
@@ -26,7 +27,6 @@ function checkAllJobsEmptyState() {
         allJobsEmptyMessage.classList.add('hidden');
     }
 }
-
 
 const btnAllFilter = document.getElementById('btn-all-filter');
 const btnInterviewFilter = document.getElementById('btn-interview-filter');
@@ -64,21 +64,6 @@ function toggleBtnStyle(id) {
     }
 }
 
-// Filter button click handlers
-document.getElementById('btn-all-filter').addEventListener('click', function () {
-    toggleBtnStyle('btn-all-filter');
-    updateAvailableJobsCount();
-});
-
-document.getElementById('btn-interview-filter').addEventListener('click', function () {
-    toggleBtnStyle('btn-interview-filter');
-    updateAvailableJobsCount();
-});
-
-document.getElementById('btn-rejected-filter').addEventListener('click', function () {
-    toggleBtnStyle('btn-rejected-filter');
-    updateAvailableJobsCount();
-});
 
 function updateAvailableJobsCount() {
     const counterElement = document.getElementById('available-jobs-count');
@@ -93,128 +78,248 @@ function updateAvailableJobsCount() {
     }
 }
 
-updateAvailableJobsCount();
-
-// ... previous code ...
-
-const mainContainer = document.querySelector('main');
-
 mainContainer.addEventListener('click', function (event) {
     if (event.target.classList.contains('btn-interview')) {
-        handleInterviewClick(event);
-    } else if (event.target.classList.contains('btn-rejected')) {
-        handleRejectedClick(event);
-    } else if (event.target.classList.contains('btn-delete') || event.target.classList.contains('fa-trash-can')) {
-        handleDeleteClick(event);
-    }
-});
+        const jobCard = event.target.closest('.job-container');
+        if (!jobCard) {
+            return;
+        }
 
-function handleInterviewClick(event) {
-    const jobCard = event.target.closest('.job-container');
-    if (!jobCard) return;
+        const jobProviderElement = jobCard.querySelector('.job-provider');
+        let jobProvider = '';
+        if (jobProviderElement) {
+            jobProvider = jobProviderElement.innerText;
+        }
 
-    const jobProvider = jobCard.querySelector('.job-provider')?.innerText || '';
-    if (!jobProvider) return;
+        const jobTitleElement = jobCard.querySelector('.job-title');
+        let jobTitle = '';
+        if (jobTitleElement) {
+            jobTitle = jobTitleElement.innerText;
+        }
 
-    const cardInfo = {
-        jobProvider: jobProvider,
-        jobTitle: jobCard.querySelector('.job-title')?.innerText || '',
-        locationTypeSalary: jobCard.querySelector('.location-type-salary')?.innerText || '',
-        jobDetails: jobCard.querySelector('.job-details')?.innerText || ''
-    };
+        const locationTypeSalaryElement = jobCard.querySelector('.location-type-salary');
+        let locationTypeSalary = '';
+        if (locationTypeSalaryElement) {
+            locationTypeSalary = locationTypeSalaryElement.innerText;
+        }
 
-    // Remove from rejected list
-    rejectedList = rejectedList.filter(item => item.jobProvider !== jobProvider);
+        const jobDetailsElement = jobCard.querySelector('.job-details');
+        let jobDetails = '';
+        if (jobDetailsElement) {
+            jobDetails = jobDetailsElement.innerText;
+        }
 
-    // Add to interview list if not already present
-    if (!interviewList.some(item => item.jobProvider === jobProvider)) {
-        interviewList.push(cardInfo);
-    }
+        if (!jobProvider) {
+            return;
+        }
 
-    // Update status in main card
-    updateJobStatus(jobProvider, 'INTERVIEW');
+        const cardInfo = {
+            jobProvider: jobProvider,
+            jobTitle: jobTitle,
+            locationTypeSalary: locationTypeSalary,
+            jobDetails: jobDetails
+        };
 
-    calculateCount();
-    updateAvailableJobsCount();
-    refreshFilteredView();
-}
+        // Remove from rejected list
+        let newRejectedList = [];
+        for (let item of rejectedList) {
+            if (item.jobProvider !== jobProvider) {
+                newRejectedList.push(item);
+            }
+        }
+        rejectedList = newRejectedList;
 
-function handleRejectedClick(event) {
-    const jobCard = event.target.closest('.job-container');
-    if (!jobCard) return;
+        // Check if already in interview list
+        let foundInInterview = false;
+        for (let item of interviewList) {
+            if (item.jobProvider === jobProvider) {
+                foundInInterview = true;
+                break;
+            }
+        }
 
-    const jobProvider = jobCard.querySelector('.job-provider')?.innerText || '';
-    if (!jobProvider) return;
+        if (!foundInInterview) {
+            interviewList.push(cardInfo);
+        }
 
-    const cardInfo = {
-        jobProvider: jobProvider,
-        jobTitle: jobCard.querySelector('.job-title')?.innerText || '',
-        locationTypeSalary: jobCard.querySelector('.location-type-salary')?.innerText || '',
-        jobDetails: jobCard.querySelector('.job-details')?.innerText || ''
-    };
-
-    // Remove from interview list
-    interviewList = interviewList.filter(item => item.jobProvider !== jobProvider);
-
-    // Add to rejected list if not already present
-    if (!rejectedList.some(item => item.jobProvider === jobProvider)) {
-        rejectedList.push(cardInfo);
-    }
-
-    // Update status in main card
-    updateJobStatus(jobProvider, 'REJECTED');
-
-    calculateCount();
-    updateAvailableJobsCount();
-    refreshFilteredView();
-}
-
-function handleDeleteClick(event) {
-    const deleteButton = event.target.closest('button');
-    if (!deleteButton) return;
-
-    const jobCard = deleteButton.closest('.job-container');
-    if (!jobCard) return;
-
-    const jobProvider = jobCard.querySelector('.job-provider')?.innerText || '';
-    if (!jobProvider) return;
-
-    // Remove from main view
-    jobCard.remove();
-
-    // Remove from lists
-    interviewList = interviewList.filter(item => item.jobProvider !== jobProvider);
-    rejectedList = rejectedList.filter(item => item.jobProvider !== jobProvider);
-
-    calculateCount();
-    updateAvailableJobsCount();
-    refreshFilteredView();
-}
-
-function updateJobStatus(jobProvider, status) {
-    for (let card of allJobsCard.children) {
-        const providerElement = card.querySelector('.job-provider');
-        if (providerElement && providerElement.innerText === jobProvider) {
-            const statusDiv = card.querySelector('.job-status');
-            if (statusDiv) {
-                if (status === 'INTERVIEW') {
+        // Update status in main card
+        for (let card of allJobsCard.children) {
+            const providerElement = card.querySelector('.job-provider');
+            if (providerElement && providerElement.innerText === jobProvider) {
+                const statusDiv = card.querySelector('.job-status');
+                if (statusDiv) {
                     statusDiv.innerHTML = '<p class="bg-green-100 text-[#10B981] font-medium py-2 px-4 w-35 rounded-sm">INTERVIEW</p>';
-                } else if (status === 'REJECTED') {
+                }
+                break;
+            }
+        }
+
+        calculateCount();
+        updateAvailableJobsCount();
+
+        if (btnInterviewFilter.classList.contains('active-tab')) {
+            renderInterview();
+        } else if (btnRejectedFilter.classList.contains('active-tab')) {
+            renderRejected();
+        }
+
+    } else if (event.target.classList.contains('btn-rejected')) {
+        const jobCard = event.target.closest('.job-container');
+        if (!jobCard) {
+            return;
+        }
+
+        const jobProviderElement = jobCard.querySelector('.job-provider');
+        let jobProvider = '';
+        if (jobProviderElement) {
+            jobProvider = jobProviderElement.innerText;
+        }
+
+        const jobTitleElement = jobCard.querySelector('.job-title');
+        let jobTitle = '';
+        if (jobTitleElement) {
+            jobTitle = jobTitleElement.innerText;
+        }
+
+        const locationTypeSalaryElement = jobCard.querySelector('.location-type-salary');
+        let locationTypeSalary = '';
+        if (locationTypeSalaryElement) {
+            locationTypeSalary = locationTypeSalaryElement.innerText;
+        }
+
+        const jobDetailsElement = jobCard.querySelector('.job-details');
+        let jobDetails = '';
+        if (jobDetailsElement) {
+            jobDetails = jobDetailsElement.innerText;
+        }
+
+        if (!jobProvider) {
+            return;
+        }
+
+        const cardInfo = {
+            jobProvider: jobProvider,
+            jobTitle: jobTitle,
+            locationTypeSalary: locationTypeSalary,
+            jobDetails: jobDetails
+        };
+
+        // Remove from interview list
+        let newInterviewList = [];
+        for (let item of interviewList) {
+            if (item.jobProvider !== jobProvider) {
+                newInterviewList.push(item);
+            }
+        }
+        interviewList = newInterviewList;
+
+        // Check if already in rejected list
+        let foundInRejected = false;
+        for (let item of rejectedList) {
+            if (item.jobProvider === jobProvider) {
+                foundInRejected = true;
+                break;
+            }
+        }
+
+        if (!foundInRejected) {
+            rejectedList.push(cardInfo);
+        }
+
+        // Update status in main card
+        for (let card of allJobsCard.children) {
+            const providerElement = card.querySelector('.job-provider');
+            if (providerElement && providerElement.innerText === jobProvider) {
+                const statusDiv = card.querySelector('.job-status');
+                if (statusDiv) {
                     statusDiv.innerHTML = '<p class="bg-red-100 text-[#EF4444] font-medium py-2 px-4 w-35 rounded-sm">REJECTED</p>';
                 }
+                break;
             }
-            break;
         }
-    }
-}
 
-function refreshFilteredView() {
-    if (btnInterviewFilter.classList.contains('active-tab')) {
-        renderInterview();
-    } else if (btnRejectedFilter.classList.contains('active-tab')) {
-        renderRejected();
+        calculateCount();
+        updateAvailableJobsCount();
+
+        if (btnRejectedFilter.classList.contains('active-tab')) {
+            renderRejected();
+        } else if (btnInterviewFilter.classList.contains('active-tab')) {
+            renderInterview();
+        }
+
+    } else if (event.target.classList.contains('btn-delete') || event.target.classList.contains('fa-trash-can')) {
+        const deleteButton = event.target.closest('button');
+        if (!deleteButton) {
+            return;
+        }
+
+        const jobCard = deleteButton.closest('.job-container');
+        if (!jobCard) {
+            return;
+        }
+
+        const jobProviderElement = jobCard.querySelector('.job-provider');
+        let jobProvider = '';
+        if (jobProviderElement) {
+            jobProvider = jobProviderElement.innerText;
+        }
+        if (!jobProvider) {
+            return;
+        }
+
+        // Remove from filtered view if active
+        if (!filteredJobList.classList.contains('hidden')) {
+            if (btnInterviewFilter.classList.contains('active-tab')) {
+                let newInterviewList = [];
+                for (let item of interviewList) {
+                    if (item.jobProvider !== jobProvider) {
+                        newInterviewList.push(item);
+                    }
+                }
+                interviewList = newInterviewList;
+                renderInterview();
+            } else if (btnRejectedFilter.classList.contains('active-tab')) {
+                let newRejectedList = [];
+                for (let item of rejectedList) {
+                    if (item.jobProvider !== jobProvider) {
+                        newRejectedList.push(item);
+                    }
+                }
+                rejectedList = newRejectedList;
+                renderRejected();
+            }
+        }
+
+        // Remove from main card
+        for (let card of allJobsCard.children) {
+            const providerElement = card.querySelector('.job-provider');
+            if (providerElement && providerElement.innerText === jobProvider) {
+                card.remove();
+                break;
+            }
+        }
+
+        // Remove from both lists
+        let newInterviewList = [];
+        for (let item of interviewList) {
+            if (item.jobProvider !== jobProvider) {
+                newInterviewList.push(item);
+            }
+        }
+        interviewList = newInterviewList;
+
+        let newRejectedList = [];
+        for (let item of rejectedList) {
+            if (item.jobProvider !== jobProvider) {
+                newRejectedList.push(item);
+            }
+        }
+        rejectedList = newRejectedList;
+
+        calculateCount();
+        updateAvailableJobsCount();
     }
-}
+});
 
 function renderInterview() {
     filteredJobList.innerHTML = '';
@@ -232,7 +337,26 @@ function renderInterview() {
     }
 
     for (let interview of interviewList) {
-        filteredJobList.appendChild(createJobCard(interview, 'INTERVIEW'));
+        let newDiv = document.createElement('div');
+        newDiv.className = 'job-container p-4 border border-blue-200 bg-gray-50 rounded-sm';
+        newDiv.innerHTML = `
+        <div class="flex justify-between">
+            <h2 class="job-provider text-[18px] font-semibold">${interview.jobProvider}</h2>
+            <button class="btn-delete cursor-pointer bg-white p-1 rounded-sm text-red-500 border border-[#EF4444]"><i class="fa-regular fa-trash-can"></i></button>
+        </div>
+        <div class="space-y-2">
+            <p class="job-title text-[#64748B]">${interview.jobTitle}</p>
+            <br>
+            <p class="location-type-salary text-[#64748B]">${interview.locationTypeSalary}</p>
+            <br>
+            <p class="bg-green-100 text-[#10B981] font-medium py-2 px-4 w-35 rounded-sm">INTERVIEW</p>
+            <p class="job-details text-justify">${interview.jobDetails}</p>
+            <div class="flex gap-4">
+                <button class="btn-interview p-2 w-25 md:w-30 rounded-sm md:font-bold text-[#10B981] border md:border-2 border-[#10B981] hover:-translate-y-1 hover:shadow-lg transition-all duration-300">INTERVIEW</button>
+                <button class="btn-rejected p-2 w-25 md:w-30 rounded-sm md:font-bold text-[#EF4444] border md:border-2 border-[#EF4444] hover:-translate-y-1 hover:shadow-lg transition-all duration-300">REJECTED</button>
+            </div>
+        </div>`;
+        filteredJobList.appendChild(newDiv);
     }
 }
 
@@ -252,35 +376,43 @@ function renderRejected() {
     }
 
     for (let rejected of rejectedList) {
-        filteredJobList.appendChild(createJobCard(rejected, 'REJECTED'));
+        let newDiv = document.createElement('div');
+        newDiv.className = 'job-container p-4 border border-blue-200 bg-gray-50 rounded-sm';
+        newDiv.innerHTML = `
+        <div class="flex justify-between">
+            <h2 class="job-provider text-[18px] font-semibold">${rejected.jobProvider}</h2>
+            <button class="btn-delete cursor-pointer bg-white p-1 rounded-sm text-red-500 border border-[#EF4444]"><i class="fa-regular fa-trash-can"></i></button>
+        </div>
+        <div class="space-y-2">
+            <p class="job-title text-[#64748B]">${rejected.jobTitle}</p>
+            <br>
+            <p class="location-type-salary text-[#64748B]">${rejected.locationTypeSalary}</p>
+            <br>
+            <p class="bg-red-100 text-[#EF4444] font-medium py-2 px-4 w-35 rounded-sm">REJECTED</p>
+            <p class="job-details text-justify">${rejected.jobDetails}</p>
+            <div class="flex gap-4">
+                <button class="btn-interview p-2 w-25 md:w-30 rounded-sm md:font-bold text-[#10B981] border md:border-2 border-[#10B981] hover:-translate-y-1 hover:shadow-lg transition-all duration-300">INTERVIEW</button>
+                <button class="btn-rejected p-2 w-25 md:w-30 rounded-sm md:font-bold text-[#EF4444] border md:border-2 border-[#EF4444] hover:-translate-y-1 hover:shadow-lg transition-all duration-300">REJECTED</button>
+            </div>
+        </div>`;
+        filteredJobList.appendChild(newDiv);
     }
 }
 
-function createJobCard(job, status) {
-    let newDiv = document.createElement('div');
-    newDiv.className = 'job-container p-4 border border-blue-200 bg-gray-50 rounded-sm';
+// Filter button click handlers
+document.getElementById('btn-all-filter').addEventListener('click', function () {
+    toggleBtnStyle('btn-all-filter');
+    updateAvailableJobsCount();
+});
 
-    const statusClass = status === 'INTERVIEW' ? 'bg-green-100 text-[#10B981]' : 'bg-red-100 text-[#EF4444]';
+document.getElementById('btn-interview-filter').addEventListener('click', function () {
+    toggleBtnStyle('btn-interview-filter');
+    updateAvailableJobsCount();
+});
 
-    newDiv.innerHTML = `
-    <div class="flex justify-between">
-        <h2 class="job-provider text-[18px] font-semibold">${job.jobProvider}</h2>
-        <button class="btn-delete cursor-pointer bg-white p-1 rounded-sm text-red-500 border border-[#EF4444]">
-            <i class="fa-regular fa-trash-can"></i>
-        </button>
-    </div>
-    <div class="space-y-2">
-        <p class="job-title text-[#64748B]">${job.jobTitle}</p>
-        <br>
-        <p class="location-type-salary text-[#64748B]">${job.locationTypeSalary}</p>
-        <br>
-        <p class="${statusClass} font-medium py-2 px-4 w-35 rounded-sm">${status}</p>
-        <p class="job-details text-justify">${job.jobDetails}</p>
-        <div class="flex gap-4">
-            <button class="btn-interview p-2 w-25 md:w-30 rounded-sm md:font-bold text-[#10B981] border md:border-2 border-[#10B981] hover:-translate-y-1 hover:shadow-lg transition-all duration-300">INTERVIEW</button>
-            <button class="btn-rejected p-2 w-25 md:w-30 rounded-sm md:font-bold text-[#EF4444] border md:border-2 border-[#EF4444] hover:-translate-y-1 hover:shadow-lg transition-all duration-300">REJECTED</button>
-        </div>
-    </div>`;
+document.getElementById('btn-rejected-filter').addEventListener('click', function () {
+    toggleBtnStyle('btn-rejected-filter');
+    updateAvailableJobsCount();
+});
 
-    return newDiv;
-}
+updateAvailableJobsCount();
